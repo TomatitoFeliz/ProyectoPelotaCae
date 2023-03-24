@@ -5,11 +5,14 @@ using UnityEngine;
 public class BallBehaviour : MonoBehaviour
 {
     Rigidbody ballrigidbody;
+    public float fuerza = 5;
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision != null)
         {
+            ballrigidbody.velocity = Vector3.zero;
+            ballrigidbody.AddForce(Vector3.up * fuerza, ForceMode.Impulse);
             Debug.Log("Chocó");
         }
     }
@@ -24,6 +27,11 @@ public class BallBehaviour : MonoBehaviour
         if (!Mathf.Approximately(ballrigidbody.velocity.y, 0.0f))
         {
             //Debug.Log("YOU LOOSE");
+        }
+
+        if (ballrigidbody.velocity.y > 2)
+        {
+            //TrailRenderer()
         }
     }
 }

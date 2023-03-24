@@ -9,11 +9,6 @@ public class Controles : MonoBehaviour
 
     public float velocidad = 10;
 
-    void Start()
-    {
-
-    }
-
     void Update()
     {
         float Horizontal = Input.GetAxis("Horizontal");
