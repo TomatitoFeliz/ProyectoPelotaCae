@@ -9,13 +9,22 @@ public class BallBehaviour : MonoBehaviour
     [SerializeField] float fuerza = 5f;
     TrailRenderer trail;
     [SerializeField] float ultraspeed = 10.0f;
+    [SerializeField]
+    GameObject restart;
 
+    public float posInicial;
+    public float posFinal;
+    public float distancia;
+    public float distanciaRecord = 0;
     float lastSpeedY = 0.0f;
     private void Start()
     {
+        restart.SetActive(false);
         trail = GetComponent<TrailRenderer>();
         ballrigidbody = GetComponent<Rigidbody>();
         trail.enabled = false;
+        posInicial = transform.position.y;
+        Debug.Log("posInicial " + posInicial);
     }
 
     private void Update()
@@ -29,6 +38,13 @@ public class BallBehaviour : MonoBehaviour
         {
             trail.enabled = false;
         }
+
+        if (distancia > PlayerPrefs.GetFloat("record"))
+        {
+            distanciaRecord = distancia;
+            PlayerPrefs.SetFloat("record", distanciaRecord);
+        }
+        Debug.Log("Record: " + PlayerPrefs.GetFloat("record"));
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -37,27 +53,27 @@ public class BallBehaviour : MonoBehaviour
         {
             if (lastSpeedY < -10f)
             {
-                Debug.Log("Destruye plataforma Basico");
                 Destroy(collision.gameObject);
             }
             else
             {
                 ballrigidbody.velocity = Vector3.zero;
                 ballrigidbody.AddForce(Vector3.up * fuerza, ForceMode.Impulse);
-                Debug.Log("Rebota");
             }
         }else if (collision.gameObject.tag == "Mortal")
         {
             if (lastSpeedY < -10f)
             {
-                Debug.Log("Destruye plataforma mortal");
                 Destroy(collision.gameObject);
             }
             else
             {
-                Debug.Log("Muerte");
+                posFinal = transform.position.y;
+                Debug.Log("posFinal " + posFinal);
+                distancia = posInicial - posFinal;
+                Debug.Log("distancia " + distancia);
                 Time.timeScale = 0.0f;
-                SceneManager.LoadScene("LVL1");
+                restart.SetActive(true);
             }
         }
     }
