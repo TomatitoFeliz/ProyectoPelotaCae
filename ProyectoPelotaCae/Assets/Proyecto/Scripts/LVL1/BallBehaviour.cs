@@ -2,94 +2,96 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class BallBehaviour : MonoBehaviour
-{ 
-    Rigidbody ballrigidbody;
-    [SerializeField] float fuerza = 5f;
-    TrailRenderer trail;
-    [SerializeField] float ultraspeed = 10.0f;
-    [SerializeField]
-    GameObject restart;
+{
+    [SerializeField] float jumpForce = 3f;
+    [SerializeField] float ultraSpeed = 10.0f;
+    Rigidbody ballRigidbody;
+    [SerializeField] TrailRenderer trail; 
+    [SerializeField]GameObject reset;
+    [SerializeField] int nivel = 1;
+    public TextMeshProUGUI recordMax, recordActual;
 
-    public float posInicial;
-    public float posFinal;
+    public float initialPosition;
+    public float endPosition;
     public float distancia;
-    public float distanciaRecord = 0;
-    float lastSpeedY = 0.0f;
-
-    int lvl1Completed = 0;
-    private void Start()
+    void Awake()
     {
-        restart.SetActive(false);
-        trail = GetComponent<TrailRenderer>();
-        ballrigidbody = GetComponent<Rigidbody>();
-        trail.enabled = false;
-        posInicial = transform.position.y;
-        Debug.Log("posInicial " + posInicial);
+        Time.timeScale = 1.0f;
+        reset.SetActive(false);
+        ballRigidbody = GetComponent<Rigidbody>();
+        trail.enabled = (false);
+        initialPosition = transform.position.y;
+        //string keyLevel = "MetrosNivel" + nivel.ToString();
+
+        // Debug.Log("Record actual = " + PlayerPrefs.GetFloat(keyLevel, 0.0f));
+        //Debug.Log("Nivel superado = " + PlayerPrefs.GetInt("NivelSuperado" + nivel.ToString(), 0));
+
     }
 
-    private void Update()
+    void Update()
     {
-        Debug.Log("es: " + PlayerPrefs.GetInt("lvl1"));
-        if (PlayerPrefs.GetInt("lvl1") == 0)
-        {
-            PlayerPrefs.SetInt("lvl1", lvl1Completed);
-        }
+        distancia = initialPosition - endPosition;
+        trail.enabled = (ballRigidbody.velocity.y < -ultraSpeed);
 
-        lastSpeedY = ballrigidbody.velocity.y;
-        if (lastSpeedY < -6f)
+        float metrosRecorridos = initialPosition - transform.position.y;
+        //Debug.Log("Has recorrido " + metrosRecorridos + "metros");
+        Debug.Log(metrosRecorridos);
+
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (ballRigidbody.velocity.y < -ultraSpeed)
         {
-            trail.enabled = true;
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Mortal"))
+        {
+            //Final de partida/muerte
+            GuardarDatos(false);
+            Time.timeScale = 0.0f;
+
+            float metrosRecorridos = initialPosition - endPosition;
+            string keyLevel = "MetrosNivel" + nivel.ToString();
+
+            reset.SetActive(true);
+            recordMax.text = ("El record máximo saddas es de: " + PlayerPrefs.GetFloat(keyLevel).ToString("0.00"));
+            recordActual.text = ("Has recorrido una ansdnadnsa de: " /*+ metrosRecorridos.ToString("0.00")*/);
+        }
+        else if (collision.gameObject.CompareTag("Final"))
+        {
+            //Victoria
+            GuardarDatos(true);
         }
         else
         {
-            trail.enabled = false;
+            ballRigidbody.velocity = Vector3.zero;
+            ballRigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-
-        if (distancia > PlayerPrefs.GetFloat("record"))
-        {
-            distanciaRecord = distancia;
-            PlayerPrefs.SetFloat("record", distanciaRecord);
-        }
-        Debug.Log("Record: " + PlayerPrefs.GetFloat("record"));
     }
 
-    private void OnCollisionEnter(Collision collision)
+    void GuardarDatos(bool hasWon)
     {
-        if (collision.gameObject.tag == "Basico")
+        endPosition = transform.position.y;
+        ballRigidbody.constraints = RigidbodyConstraints.FreezeAll;
+
+        float metrosRecorridos = initialPosition - endPosition;
+        string keyLevel = "MetrosNivel" + nivel.ToString();
+
+
+        if (PlayerPrefs.GetFloat(keyLevel, 0.0f) < metrosRecorridos)
         {
-            if (lastSpeedY < -10f)
-            {
-                Destroy(collision.gameObject);
-            }
-            else
-            {
-                ballrigidbody.velocity = Vector3.zero;
-                ballrigidbody.AddForce(Vector3.up * fuerza, ForceMode.Impulse);
-            }
+            PlayerPrefs.SetFloat(keyLevel, metrosRecorridos);
+
         }
-        else if (collision.gameObject.tag == "Mortal")
+        if (hasWon == true)
         {
-            if (lastSpeedY < -10f)
-            {
-                Destroy(collision.gameObject);
-            }
-            else
-            {
-                posFinal = transform.position.y;
-                Debug.Log("posFinal " + posFinal);
-                distancia = posInicial - posFinal;
-                Debug.Log("distancia " + distancia);
-                Time.timeScale = 0.0f;
-                restart.SetActive(true);
-            }
-        }
-        else if (collision.gameObject.tag == "Final")
-        {
-            lvl1Completed = 1;
-            PlayerPrefs.SetInt("lvl1", lvl1Completed);
+            PlayerPrefs.SetInt("NivelSuperado" + nivel.ToString(), 1);
             SceneManager.LoadScene("MainMenu");
         }
+        PlayerPrefs.Save();
+
     }
 }
