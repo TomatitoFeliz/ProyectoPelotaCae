@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class LvlSelect : MonoBehaviour
 {
     [SerializeField]
-    GameObject mainMenu, lvlMenu;
+    GameObject mainMenu, lvlMenu, ajustes;
     [SerializeField]
     Button bLvl1, bLvl2, bLvl3;
 
@@ -18,6 +18,7 @@ public class LvlSelect : MonoBehaviour
     {
         mainMenu.SetActive(true);
         lvlMenu.SetActive(false);
+        ajustes.SetActive(false);
         bLvl2.interactable = false;
         bLvl3.interactable = false;
     }
@@ -25,6 +26,24 @@ public class LvlSelect : MonoBehaviour
     {
         mainMenu.SetActive(false);
         lvlMenu.SetActive(true);
+    }
+
+    public void Ajustes()
+    {
+        if (ajustes.activeInHierarchy == true)
+        {
+            ajustes.SetActive(false);
+        }
+        else if (ajustes.activeInHierarchy == false)
+        {
+            ajustes.SetActive(true);
+        }
+
+    }
+
+    public void Salir()
+    {
+        Application.Quit();
     }
 
     public void LVL1()
