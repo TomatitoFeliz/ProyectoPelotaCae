@@ -9,15 +9,18 @@ EditorBuildSettings:
     path: 
     guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Proyecto/Scenes/MainMenu.unity
+    path: Assets/Proyecto/Scenes/Menu/MainMenu.unity
     guid: 530c0be388c03d344ac97f6414d8c51d
   - enabled: 1
-    path: Assets/Proyecto/Scenes/LVL1.unity
+    path: Assets/Proyecto/Scenes/Menu/LevelsMenu.unity
+    guid: 1a70a3640adc8494bb4653bb4fcb52d5
+  - enabled: 1
+    path: Assets/Proyecto/Scenes/Gameplay/LVL1.unity
     guid: 08476fbfe4c866941a2b893a257331d9
   - enabled: 1
-    path: Assets/Proyecto/Scenes/LVL2.unity
+    path: Assets/Proyecto/Scenes/Gameplay/LVL2.unity
     guid: 9e875c192b5327141aa02ff0598e86fd
   - enabled: 1
-    path: Assets/Proyecto/Scenes/LVL3.unity
+    path: Assets/Proyecto/Scenes/Gameplay/LVL3.unity
     guid: e8e6c1f2ea2e3aa47a1304eeb161053e
   m_configObjects: {}
