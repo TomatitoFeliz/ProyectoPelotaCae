@@ -10,7 +10,7 @@ public class BallBehaviour : MonoBehaviour
     [SerializeField] float ultraSpeed = 5.0f;
     Rigidbody ballRigidbody;
     [SerializeField] TrailRenderer trail; 
-    [SerializeField] GameObject reset;
+    [SerializeField] GameObject reset, derrota, victoria;
     
     public int nivel = 0;
     
@@ -42,7 +42,7 @@ public class BallBehaviour : MonoBehaviour
     {
         if (velocity < -ultraSpeed)
         {
-            Destroy(collision.gameObject);
+            LeanTween.scale(collision.gameObject, Vector3.zero, 0.3f).setEaseInBack().setOnComplete(() => { Destroy(collision.gameObject); });
         }
         else if (collision.gameObject.CompareTag("Mortal"))
         {
@@ -53,6 +53,8 @@ public class BallBehaviour : MonoBehaviour
             string keyLevel = "MetrosNivel" + nivel.ToString();
 
             reset.SetActive(true);
+            derrota.SetActive(true);
+            victoria.SetActive(false);
             recordMax.text = ("El record máximo saddas es de: " + PlayerPrefs.GetFloat(keyLevel).ToString("0.00"));
             recordActual.text = ("Has recorrido una distancia de: " + metrosRecorridos.ToString("0.00"));
         }
@@ -83,7 +85,11 @@ public class BallBehaviour : MonoBehaviour
         if (hasWon == true)
         {
             PlayerPrefs.SetInt("NivelSuperado" + nivel.ToString(), 1);
-            SceneManager.LoadScene("LevelsMenu");
+            reset.SetActive(true);
+            derrota.SetActive(false);
+            victoria.SetActive(true);
+            recordMax.text = ("El record máximo saddas es de: " + PlayerPrefs.GetFloat(keyLevel).ToString("0.00"));
+            recordActual.text = ("Has recorrido una distancia de: " + metrosRecorridos.ToString("0.00"));
         }
         PlayerPrefs.Save();
 
